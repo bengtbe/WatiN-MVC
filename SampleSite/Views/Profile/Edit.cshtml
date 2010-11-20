@@ -1,0 +1,16 @@
+﻿@model WatiN_MVC.SampleSite.Models.Profile
+
+@{
+    View.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+@Html.EditorFor(model => model)
+<br />
+@Html.EditorFor(model => model.Name)
+@Html.EditorFor(model => model.Email)
+@Html.EditorFor(model => model.Website)
+@Html.EditorFor(model => model.Company)
+@Html.EditorFor(model => model.Location)
