@@ -7,50 +7,73 @@ using System;
 
 namespace WatiN_MVC.Tests {
 
-    public class WatinMvcBase<TModel> where TModel : class
-    {
-        protected void TypeInTextBox<TProperty>(IE browser, Expression<Func<TModel, TProperty>> expression, string value)
+    public class NUnitSampleTests {
+
+        string url = "http://localhost/WatiN-MVC/Profile/Edit/1";
+
+        [Test]
+        public void Should_be_able_to_type_values_into_textboxes()
         {
-            string name = ExpressionHelper.GetExpressionText(expression);
-            browser.TextField(Find.ByName(name)).TypeText(value);
+            using (var browser = new WatinMvc<Profile>(url))
+            {
+                browser.TypeInTextBox(model => model.Name, "Model_Name");
+                browser.TypeInTextBox(model => model.Email, "Model_Email");
+                browser.TypeInTextBox(model => model.Age, "30");
+                browser.TypeInTextBox(model => model.Company.Name, "Model_Company_Name");
+                browser.AssertContainsText("Namesadfasdf");
+            }
+
         }
 
-        protected string TextBoxFor<TProperty>(Expression<Func<TModel, TProperty>> expression) 
+        [Test]
+        public void Should_be_detect_validation_errors()
         {
-            return ExpressionHelper.GetExpressionText(expression);
+            using (var browser = new WatinMvc<Profile>(url))
+            {
+                browser.TypeInTextBox(model => model.Age, "NOT A AGE");
+                browser.TypeInTextBox(model => model.Company.Name, "Model_Company_Name");
+                browser.HasValidationError(model => model.Age);
+            }
+
         }
 
     }
 
 
-    public class NUnitSampleTests : WatinMvcBase<Profile> {
+    public class WatinMvc<TModel> : IDisposable where TModel : class
+    {
+        public IE Watin { get; set; }
 
-        string url = "http://localhost/WatiN-MVC/Profile/Edit/1";
-
-        [Test]
-        public void SomePassingTest() {
-            Assert.AreEqual(5, 5);
-        }
-
-        [Test]
-        public void SomeFailingTest() {
-            Assert.Greater(5, 7);
-        }
-
-        [Test]
-        public void SearchForWatiNOnGoogle()
+        public WatinMvc(string url)
         {
-            using (var browser = new IE(url))
-            {
-                TypeInTextBox(browser, model => model.Email, "Dette var jo morro");
-
-                Assert.IsTrue(browser.ContainsText("Email"));
-            }
-
+            Watin = new IE(url);
         }
 
 
+        public void TypeInTextBox<TProperty>(Expression<Func<TModel, TProperty>> expression, string value)
+        {
+            string name = ExpressionHelper.GetExpressionText(expression);
+            Watin.TextField(Find.ByName(name)).TypeText(value);
+        }
 
+        public void HasValidationError<TProperty>(Expression<Func<TModel, TProperty>> expression)
+        {
+            string name = ExpressionHelper.GetExpressionText(expression);
 
+            if(!Watin.Element(Find.ByName(name)).ClassName.Contains("input-validation-error"))
+                throw new AssertionException("VALIDATION BANG!");
+        }
+
+        public void AssertContainsText(string value)
+        {
+            if (!Watin.ContainsText("value"))
+                throw new AssertionException("BANG!");
+        }
+      
+
+        public void Dispose()
+        {
+            Watin.Dispose();
+        }
     }
 }
