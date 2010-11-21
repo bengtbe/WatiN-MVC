@@ -31,8 +31,7 @@ namespace WatiN_MVC.Tests {
             using (var browser = new WatinMvc<Profile>(url))
             {
                 browser.TypeInTextBox(model => model.Age, "NOT A AGE");
-                browser.TypeInTextBox(model => model.Company.Name, "Model_Company_Name");
-                browser.HasValidationError(model => model.Age);
+                browser.HasValidationError(model => model.Email);
             }
 
         }
@@ -61,7 +60,7 @@ namespace WatiN_MVC.Tests {
             string name = ExpressionHelper.GetExpressionText(expression);
 
             if(!Watin.Element(Find.ByName(name)).ClassName.Contains("input-validation-error"))
-                throw new AssertionException("VALIDATION BANG!");
+                throw new AssertionException("BANG!");
         }
 
         public void AssertContainsText(string value)

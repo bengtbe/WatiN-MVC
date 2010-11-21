@@ -11,6 +11,8 @@ namespace WatiN_MVC.SampleSite.Models
         [Required]
         public string Name { get; set; }
 
+        public Gender Gender { get; set; }
+
         public int? Age { get; set; }
 
         public string Email {get; set;}
@@ -20,5 +22,11 @@ namespace WatiN_MVC.SampleSite.Models
         public Company Company {get; set;}
 
         public string Location {get; set;}
+    }
+
+    public enum Gender
+    {
+        Male,
+        Female
     }
 }
